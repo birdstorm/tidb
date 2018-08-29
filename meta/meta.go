@@ -30,7 +30,6 @@ import (
 	"github.com/pingcap/tidb/mysql"
 	"github.com/pingcap/tidb/structure"
 	"github.com/pingcap/tidb/terror"
-	"github.com/prometheus/common/log"
 )
 
 var (
@@ -356,7 +355,7 @@ func (m *Meta) UpdateTable(dbID int64, tableInfo *model.TableInfo) error {
 // ListTables shows all tables in database.
 func (m *Meta) ListTables(dbID int64) ([]*model.TableInfo, error) {
 	dbKey := m.dbKey(dbID)
-	log.Warnf("dbID = %d", dbID)
+	fmt.Printf("dbID = %d\n", dbID)
 	if err := m.checkDBExists(dbKey); err != nil {
 		return nil, errors.Trace(err)
 	}
