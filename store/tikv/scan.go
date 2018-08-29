@@ -75,19 +75,25 @@ func (s *Scanner) Value() []byte {
 // Next return next element.
 func (s *Scanner) Next() error {
 	bo := NewBackoffer(context.Background(), scannerNextMaxBackoff)
+	log.Warnf("Next Scanner Iterator")
 	if !s.valid {
 		return errors.New("scanner iterator is invalid")
 	}
 	for {
 		s.idx++
+		log.Warnf("idx = %d", s.idx)
 		if s.idx >= len(s.cache) {
+			log.Warnf("idx >= len(s.cache) %d", len(s.cache))
 			if s.eof {
 				s.Close()
+				log.Warnf("eof, close scanner")
 				return nil
 			}
 			err := s.getData(bo)
+			log.Warnf("get data")
 			if err != nil {
 				s.Close()
+				log.Warnf("error, close scanner")
 				return errors.Trace(err)
 			}
 			if s.idx >= len(s.cache) {
@@ -100,8 +106,10 @@ func (s *Scanner) Next() error {
 		}
 		if len(s.Value()) == 0 {
 			// nil stands for NotExist, go to next KV pair.
+			log.Warnf("not exist, continue")
 			continue
 		}
+		log.Warnf("return")
 		return nil
 	}
 }
@@ -121,6 +129,7 @@ func (s *Scanner) resolveCurrentLock(bo *Backoffer) error {
 		return nil
 	}
 	val, err := s.snapshot.get(bo, kv.Key(current.Key))
+	log.Warnf("get key from %s -> val = %s", current.Key, val)
 	if err != nil {
 		return errors.Trace(err)
 	}

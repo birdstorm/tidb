@@ -20,6 +20,7 @@ import (
 
 	"github.com/juju/errors"
 	"github.com/pingcap/tidb/kv"
+	"fmt"
 )
 
 // HashPair is the pair for (field, value) in a hash.
@@ -251,6 +252,7 @@ func (t *TxStructure) iterateHash(key []byte, fn func(k []byte, v []byte) error)
 		}
 
 		_, field, err = t.decodeHashDataKey(it.Key())
+		fmt.Printf("decode key %s -> %s\n", it.Key(), field)
 		if err != nil {
 			return errors.Trace(err)
 		}
