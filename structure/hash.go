@@ -252,7 +252,11 @@ func (t *TxStructure) iterateHash(key []byte, fn func(k []byte, v []byte) error)
 		}
 
 		_, field, err = t.decodeHashDataKey(it.Key())
-		fmt.Printf("decode key %s -> %s\n", it.Key(), field)
+		fmt.Printf("decode key %s -> %s\nvalue = ", it.Key(), field)
+		for x := range it.Key() {
+			fmt.Printf("%d,", it.Key()[x])
+		}
+		fmt.Println("")
 		if err != nil {
 			return errors.Trace(err)
 		}
