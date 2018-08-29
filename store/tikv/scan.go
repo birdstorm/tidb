@@ -14,6 +14,9 @@
 package tikv
 
 import (
+	"fmt"
+	"math/rand"
+
 	"github.com/juju/errors"
 	pb "github.com/pingcap/kvproto/pkg/kvrpcpb"
 	"github.com/pingcap/tidb/kv"
@@ -139,7 +142,8 @@ func (s *Scanner) resolveCurrentLock(bo *Backoffer) error {
 }
 
 func (s *Scanner) getData(bo *Backoffer) error {
-	log.Debugf("txn getData nextStartKey[%q], txn %d", s.nextStartKey, s.startTS())
+	gid := rand.Intn(10000)
+	fmt.Printf("%d txn getData nextStartKey = %v, txn %d\n", gid, s.nextStartKey, s.startTS())
 	sender := NewRegionRequestSender(s.snapshot.store.regionCache, s.snapshot.store.client)
 
 	for {
@@ -147,6 +151,7 @@ func (s *Scanner) getData(bo *Backoffer) error {
 		if err != nil {
 			return errors.Trace(err)
 		}
+		fmt.Printf("%d txn getData region %v\n", gid, loc)
 		req := &tikvrpc.Request{
 			Type: tikvrpc.CmdScan,
 			Scan: &pb.ScanRequest{
@@ -160,6 +165,7 @@ func (s *Scanner) getData(bo *Backoffer) error {
 				NotFillCache:   s.snapshot.notFillCache,
 			},
 		}
+		fmt.Printf("%d txn getData scanreq[%v] startKey = %v\n", gid, req.Scan, req.Scan.StartKey)
 		resp, err := sender.SendReq(bo, req, loc.Region, ReadTimeoutMedium)
 		if err != nil {
 			return errors.Trace(err)
@@ -194,6 +200,7 @@ func (s *Scanner) getData(bo *Backoffer) error {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				fmt.Printf("%d txn getData lock encountered[%v]\n", gid, lock.Key)
 				pair.Key = lock.Key
 			}
 		}

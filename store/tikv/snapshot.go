@@ -26,6 +26,7 @@ import (
 	"github.com/pingcap/tidb/util/goroutine_pool"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
+	"fmt"
 )
 
 var (
@@ -281,6 +282,7 @@ func (s *tikvSnapshot) get(bo *Backoffer, k kv.Key) ([]byte, error) {
 
 // Seek return a list of key-value pair after `k`.
 func (s *tikvSnapshot) Seek(k kv.Key) (kv.Iterator, error) {
+	fmt.Printf("snapshot.Seek: dataPrefix = %v\n", k)
 	scanner, err := newScanner(s, k, scanBatchSize)
 	return scanner, errors.Trace(err)
 }

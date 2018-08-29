@@ -16,6 +16,7 @@ package structure
 import (
 	"bytes"
 	"encoding/binary"
+	"math/rand"
 	"strconv"
 
 	"github.com/juju/errors"
@@ -238,7 +239,9 @@ func (t *TxStructure) HClear(key []byte) error {
 }
 
 func (t *TxStructure) iterateHash(key []byte, fn func(k []byte, v []byte) error) error {
+	gid := rand.Intn(10000)
 	dataPrefix := t.hashDataKeyPrefix(key)
+	fmt.Printf("%d iterateHash: dataPrefix = %v\n", gid, dataPrefix)
 	it, err := t.reader.Seek(dataPrefix)
 	if err != nil {
 		return errors.Trace(err)
@@ -260,6 +263,7 @@ func (t *TxStructure) iterateHash(key []byte, fn func(k []byte, v []byte) error)
 		if err != nil {
 			return errors.Trace(err)
 		}
+		fmt.Printf("%d iterateHash: field = %v\n", gid, field)
 
 		if err = fn(field, it.Value()); err != nil {
 			return errors.Trace(err)
