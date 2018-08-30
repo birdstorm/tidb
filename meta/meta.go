@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
@@ -363,10 +364,12 @@ func (m *Meta) UpdateTable(dbID int64, tableInfo *model.TableInfo) error {
 
 // ListTables shows all tables in database.
 func (m *Meta) ListTables(dbID int64) ([]*model.TableInfo, error) {
+	gid := rand.Intn(10000)
 	dbKey := m.dbKey(dbID)
 	if err := m.checkDBExists(dbKey); err != nil {
 		return nil, errors.Trace(err)
 	}
+	fmt.Printf("%d ListTables: dbID = [%v], dbKey = %v\n", gid, dbID, dbKey)
 
 	res, err := m.txn.HGetAll(dbKey)
 	if err != nil {
@@ -383,6 +386,7 @@ func (m *Meta) ListTables(dbID int64) ([]*model.TableInfo, error) {
 
 		tbInfo := &model.TableInfo{}
 		err = json.Unmarshal(r.Value, tbInfo)
+		fmt.Printf("%d ListTables: table = [%v]\n", gid, tbInfo.Name)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
